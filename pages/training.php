@@ -95,7 +95,7 @@
         <a href="account.php">Account</a>
         <a href="weight.php">Weight</a>
         <a href="training.php">Training</a>
-        <a href="food.php">Food</a>
+        <a href="nutrition.php">Food</a>
 
     </nav>
 
