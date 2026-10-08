@@ -1,166 +1,502 @@
+<?php
+
+require_once __DIR__ . '/../includes/db.php';
+
+
+/* =========================
+   Save / Update Weight
+========================= */
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $action = $_POST['action'] ?? '';
+
+    /* =========================
+       Add Weight
+    ========================= */
+
+    if ($action === 'add') {
+
+        $recordDate = $_POST['record_date'] ?? '';
+        $weight = $_POST['weight'] ?? '';
+
+        if ($recordDate !== '' && $weight !== '') {
+
+            $stmt = $pdo->prepare("
+                INSERT INTO daily_records
+                    (user_id, record_date, weight)
+                VALUES
+                    (:user_id, :record_date, :weight)
+                ON CONFLICT (user_id, record_date)
+                DO UPDATE SET
+                    weight = EXCLUDED.weight
+            ");
+
+            $stmt->execute([
+                ':user_id' => 2,
+                ':record_date' => $recordDate,
+                ':weight' => $weight
+            ]);
+        }
+    }
+
+
+    /* =========================
+       Edit Weight
+    ========================= */
+
+    if ($action === 'edit') {
+
+        $recordDate = $_POST['record_date'] ?? '';
+        $weight = $_POST['weight'] ?? '';
+
+        if ($recordDate !== '' && $weight !== '') {
+
+            $stmt = $pdo->prepare("
+                UPDATE daily_records
+                SET weight = :weight
+                WHERE user_id = :user_id
+                  AND record_date = :record_date
+            ");
+
+            $stmt->execute([
+                ':weight' => $weight,
+                ':user_id' => 2,
+                ':record_date' => $recordDate
+            ]);
+        }
+    }
+
+
+    header('Location: weight.php');
+    exit;
+}
+
+
+/* =========================
+   Get Weight History
+========================= */
+
+$stmt = $pdo->prepare("
+    SELECT
+        record_date,
+        weight
+    FROM daily_records
+    WHERE user_id = 2
+      AND weight IS NOT NULL
+    ORDER BY record_date DESC
+");
+
+$stmt->execute();
+
+$weightRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>FitTrack - Weight</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+    <link
+        rel="stylesheet"
+        href="../public/css/weight.css"
+    >
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-
-        header {
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 1px solid #ddd;
-            position: relative;
-        }
-
-        .menu-button {
-            position: absolute;
-            left: 20px;
-            background: none;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-        }
-
-        .side-nav {
-            position: fixed;
-            top: 0;
-            left: -260px;
-            width: 260px;
-            height: 100%;
-            background: white;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
-            transition: left 0.3s ease;
-            z-index: 1000;
-            padding: 20px;
-        }
-
-        .side-nav.open {
-            left: 0;
-        }
-
-        .close-button {
-            background: none;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            margin-bottom: 30px;
-        }
-
-        .side-nav a {
-            display: block;
-            padding: 15px 10px;
-            text-decoration: none;
-            color: #333;
-            font-size: 18px;
-        }
-
-        .side-nav a:hover {
-            background: #f2f2f2;
-        }
-
-        main {
-            padding: 30px;
-        }
-    </style>
 </head>
+
 
 <body>
 
-    <header>
 
-        <button class="menu-button" onclick="openMenu()">⋮</button>
+<!-- =========================
+     Header
+========================= -->
 
-        <h1>FitTrack</h1>
+<header class="header">
 
-    </header>
+    <button
+        class="menu-button"
+        onclick="openMenu()"
+        aria-label="Open menu"
+    >
+        ☰
+    </button>
 
 
-    <nav class="side-nav" id="sideNav">
+    <div class="logo">
+        FitTrack
+    </div>
 
-        <button class="close-button" onclick="closeMenu()">×</button>
 
-        <a href="dashboard.php">Dashboard</a>
-        <a href="account.php">Account</a>
-        <a href="weight.php">Weight</a>
-        <a href="training.php">Training</a>
-        <a href="nutrition.php">Food</a>
+    <div class="user-name">
+        User
+    </div>
+
+</header>
+
+
+
+<!-- =========================
+     Sidebar
+========================= -->
+
+<aside
+    class="sidebar"
+    id="sideNav"
+>
+
+    <div class="sidebar-title">
+        FitTrack
+    </div>
+
+
+    <nav>
+
+        <a href="dashboard.php">
+            Dashboard
+        </a>
+
+        <a href="profile.php">
+            Profile
+        </a>
+
+        <a
+            href="weight.php"
+            class="active"
+        >
+            Weight
+        </a>
+
+        <a href="training.php">
+            Training
+        </a>
+
+        <a href="nutrition.php">
+            Nutrition
+        </a>
 
     </nav>
 
-
-    <main>
-
-        <h2>Weight</h2>
-
-        <section>
-            <h3>Record Today's Weight</h3>
-
-            <form method="POST">
-
-                <label for="record_date">Date</label>
-                <input type="date" id="record_date" name="record_date" required>
-
-                <br><br>
-
-                <label for="weight">Weight (kg)</label>
-                <input type="number" id="weight" name="weight"
-                       step="0.01" required>
-
-                <br><br>
-
-                <button type="submit">Save Weight</button>
-
-            </form>
-        </section>
-
-        <section>
-            <h3>Weight History</h3>
-
-            <p>No weight records yet.</p>
-
-        </section>
-
-    </main>
+</aside>
 
 
-    <script>
 
-        function openMenu() {
-            document.getElementById("sideNav").classList.add("open");
-        }
+<!-- =========================
+     Overlay
+========================= -->
 
-        function closeMenu() {
-            document.getElementById("sideNav").classList.remove("open");
-        }
+<div
+    class="overlay"
+    id="overlay"
+    onclick="closeMenu()"
+></div>
 
-        document.addEventListener("click", function(event) {
 
-            const sideNav = document.getElementById("sideNav");
-            const menuButton = document.querySelector(".menu-button");
 
-            if (
-                sideNav.classList.contains("open") &&
-                !sideNav.contains(event.target) &&
-                !menuButton.contains(event.target)
-            ) {
-                closeMenu();
-            }
+<!-- =========================
+     Main
+========================= -->
 
-        });
+<main class="main">
 
-    </script>
+
+    <!-- =========================
+         Page Header
+    ========================= -->
+
+    <div class="page-header">
+
+        <div>
+
+            <h1 class="page-title">
+                Weight
+            </h1>
+
+            <p class="page-description">
+                Record your weight and track your progress over time.
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================
+         Record Weight
+    ========================= -->
+
+    <section class="weight-card">
+
+        <div class="section-header">
+
+            <h2>
+                Record Weight
+            </h2>
+
+            <p>
+                Add your current weight.
+            </p>
+
+        </div>
+
+
+        <form
+            method="POST"
+            class="weight-form"
+        >
+
+            <input
+                type="hidden"
+                name="action"
+                value="add"
+            >
+
+
+            <div class="form-group">
+
+                <label for="record_date">
+                    Date
+                </label>
+
+                <input
+                    type="date"
+                    id="record_date"
+                    name="record_date"
+                    value="<?= date('Y-m-d') ?>"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="weight">
+                    Weight (kg)
+                </label>
+
+                <input
+                    type="number"
+                    id="weight"
+                    name="weight"
+                    min="1"
+                    max="300"
+                    step="0.1"
+                    placeholder="Example: 63.2"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="save-button"
+            >
+                Save Weight
+            </button>
+
+        </form>
+
+    </section>
+
+
+
+    <!-- =========================
+         Weight History
+    ========================= -->
+
+    <section class="weight-card history-card">
+
+        <div class="section-header">
+
+            <h2>
+                Weight History
+            </h2>
+
+            <p>
+                Review and edit your previous weight records.
+            </p>
+
+        </div>
+
+
+        <?php if (empty($weightRecords)): ?>
+
+            <div class="empty-history">
+
+                <div class="empty-history-title">
+                    No weight records yet
+                </div>
+
+                <div class="empty-history-text">
+                    Save your first weight record to see it here.
+                </div>
+
+            </div>
+
+
+        <?php else: ?>
+
+
+            <div class="history-list">
+
+
+                <?php foreach ($weightRecords as $record): ?>
+
+
+                    <!-- =========================
+                         Normal History Row
+                    ========================= -->
+
+                    <div
+                        class="history-row"
+                        id="row-<?= htmlspecialchars($record['record_date']) ?>"
+                    >
+
+                        <span>
+                            <?= htmlspecialchars($record['record_date']) ?>
+                        </span>
+
+
+                        <span>
+                            <?= htmlspecialchars($record['weight']) ?> kg
+                        </span>
+
+
+                        <button
+                            type="button"
+                            class="edit-button"
+                            onclick="editWeight('<?= htmlspecialchars($record['record_date']) ?>', '<?= htmlspecialchars($record['weight']) ?>')"
+                        >
+                            Edit
+                        </button>
+
+                    </div>
+
+
+                <?php endforeach; ?>
+
+
+            </div>
+
+
+        <?php endif; ?>
+
+
+    </section>
+
+
+</main>
+
+
+
+<!-- =========================
+     JavaScript
+========================= -->
+
+<script>
+
+function openMenu() {
+
+    document
+        .getElementById("sideNav")
+        .classList
+        .add("active");
+
+    document
+        .getElementById("overlay")
+        .classList
+        .add("active");
+}
+
+
+function closeMenu() {
+
+    document
+        .getElementById("sideNav")
+        .classList
+        .remove("active");
+
+    document
+        .getElementById("overlay")
+        .classList
+        .remove("active");
+}
+
+
+/* =========================
+   Edit Weight
+========================= */
+
+function editWeight(date, weight) {
+
+    const row = document.getElementById("row-" + date);
+
+    row.innerHTML = `
+        <form method="POST" class="edit-form">
+
+            <input
+                type="hidden"
+                name="action"
+                value="edit"
+            >
+
+            <input
+                type="hidden"
+                name="record_date"
+                value="${date}"
+            >
+
+            <span class="history-date">
+                ${date}
+            </span>
+
+            <input
+                type="number"
+                name="weight"
+                value="${weight}"
+                min="1"
+                max="300"
+                step="0.1"
+                class="edit-weight-input"
+                required
+            >
+
+            <span>kg</span>
+
+            <button
+                type="submit"
+                class="edit-save-button"
+            >
+                Save
+            </button>
+
+            <button
+                type="button"
+                class="edit-cancel-button"
+                onclick="location.reload()"
+            >
+                Cancel
+            </button>
+
+        </form>
+    `;
+}
+
+</script>
+
 
 </body>
 </html>
