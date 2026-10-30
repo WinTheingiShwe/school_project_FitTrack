@@ -1,0 +1,2 @@
+# FitTrack uses native PHP; explicitly identify PHP files for GitHub Linguist.
+*.php linguist-language=PHP
