@@ -26,19 +26,31 @@ for their purpose, dependencies, and completion criteria.
 
 Work in progress. Features are being developed and published incrementally.
 The committed foundation includes the database schema, page structure, shared navigation,
-and weight recording with history and editing.
+and weight recording with history and editing. The account milestone adds registration,
+login, logout, and a private profile with editable fitness goals.
+
+## Account milestone
+
+- Register an account and sign in using a password hash stored in PostgreSQL.
+- View your profile and update starting weight, goal weight, and goal dates.
+- Protect profile access with a shared session check and form submissions with CSRF tokens.
+- Rotate the session ID after authentication and clear the session on sign-out.
+
+Login currently opens the profile. The earlier weight page and placeholder feature pages
+are not part of the authenticated account flow yet; their integration is the next milestone.
+This development version is not ready for public deployment: login rate limiting,
+password recovery, and email verification are not implemented.
 
 ## Next milestones
 
 Additional implementation exists in the local working tree and is awaiting review and
 feature-focused commits. These milestones are not yet marked as released:
 
-1. User registration, login, and profile management
-2. Weight tracking connected to the signed-in user
-3. Training records and duration summaries
-4. Nutrition records, followed by convenience-store product selection
-5. Personal dashboards with weight, training, and nutrition analysis
-6. Community analytics and a documented demonstration
+1. Weight tracking connected to the signed-in user
+2. Training records and duration summaries
+3. Nutrition records, followed by convenience-store product selection
+4. Personal dashboards with weight, training, and nutrition analysis
+5. Community analytics and a documented demonstration
 
 ## Technology stack
 
@@ -53,21 +65,33 @@ database/      Database schema
 includes/      Shared PHP code and database connection
 pages/         Application pages
 public/        Stylesheets and other browser assets
-index.php      Root entry point (currently a placeholder)
+tests/         HTTP integration checks and test router
+index.php      Redirects to sign-in
 ```
 
 ## Local setup
 
-1. Install PHP with the PDO PostgreSQL extension and start PostgreSQL.
+1. Install PHP 8+ with the PDO PostgreSQL and mbstring extensions and start PostgreSQL.
 2. Create a development database and apply `database/schema.sql`.
 3. Create `config/database.php` with a PDO connection assigned to `$pdo`.
    This file is excluded from Git because it contains local credentials.
 4. From the project root, run `php -S localhost:8000`.
-5. Open the relevant page under `http://localhost:8000/pages/`.
+5. Open `http://localhost:8000/` and select **Create Account**.
 
-Authentication and a complete onboarding flow are still part of the planned rollout.
-The initial weight page uses a development user ID, so it requires a matching test user
-in the local database until the authentication update is published.
+The account flow works with the existing `users` table; no schema change is required
+for this milestone. The initial weight page still uses a development user ID in the
+committed version and will be connected to authentication in the next milestone.
+
+## Verification
+
+Run `php tests/auth_http_test.php` against your local development database.
+The test requires permission to create a disposable PostgreSQL schema and starts a
+short-lived HTTP server on a loopback port. It checks registration, password hashing,
+login, session rotation, profile access, validation, CSRF rejection, account isolation,
+logout, and invalidated accounts. Test data and sessions are removed afterwards;
+existing application tables are not modified.
+
+HTTP checks and PHP syntax checks have passed. Browser layout verification remains pending.
 
 ## Development approach
 

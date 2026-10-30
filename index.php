@@ -1,5 +1,3 @@
 <?php
-
-echo "Welcome to FitTrack";
-
-?>
+header('Location: pages/login.php');
+exit;

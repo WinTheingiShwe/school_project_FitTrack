@@ -1,0 +1,240 @@
+
+/* FitTrack - Sign Up */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f8fafc;
+    color: #172033;
+}
+
+.auth-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
+}
+
+/* Left branding panel */
+
+.brand-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 48px 60px;
+    color: #fff;
+    background: linear-gradient(145deg, #111827, #25335c 65%, #43338a);
+}
+
+.brand-logo,
+.mobile-logo {
+    font-size: 24px;
+    font-weight: 750;
+    letter-spacing: -0.6px;
+}
+
+.brand-content {
+    max-width: 520px;
+}
+
+.brand-label {
+    display: inline-block;
+    margin-bottom: 24px;
+    color: #c4b5fd;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.brand-content h1 {
+    margin: 0 0 24px;
+    font-size: clamp(36px, 4vw, 58px);
+    line-height: 1.15;
+    letter-spacing: -2px;
+}
+
+.brand-content p {
+    max-width: 410px;
+    color: #cbd5e1;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.brand-footer {
+    color: #aab5cb;
+    font-size: 13px;
+}
+
+/* Right form panel */
+
+.form-panel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 48px 32px;
+    background: #fff;
+}
+
+.form-wrapper {
+    width: 100%;
+    max-width: 410px;
+}
+
+.mobile-logo {
+    display: none;
+    color: #172033;
+}
+
+.form-heading {
+    margin-bottom: 32px;
+}
+
+.form-heading h2 {
+    margin: 0 0 10px;
+    font-size: 32px;
+    font-weight: 750;
+    letter-spacing: -1px;
+}
+
+.form-heading p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: #334155;
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 15px;
+    border: 1px solid #dbe1eb;
+    border-radius: 10px;
+    background: #fff;
+    color: #172033;
+    font: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input::placeholder {
+    color: #94a3b8;
+}
+
+.form-group input:focus {
+    border-color: #7665df;
+    box-shadow: 0 0 0 4px rgba(118, 101, 223, 0.12);
+}
+
+.submit-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    margin-top: 8px;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 10px;
+    background: #242b48;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.submit-button:hover {
+    background: #43338a;
+    transform: translateY(-1px);
+}
+
+.submit-button span {
+    font-size: 19px;
+}
+
+.signin-link {
+    margin-top: 28px;
+    text-align: center;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.signin-link a {
+    color: #6252c5;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.signin-link a:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    margin-bottom: 22px;
+    padding: 13px 15px;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* Tablet */
+
+@media (max-width: 900px) {
+    .brand-panel {
+        padding: 36px;
+    }
+
+    .brand-content h1 {
+        font-size: 38px;
+    }
+}
+
+/* Mobile */
+
+@media (max-width: 700px) {
+    .auth-container {
+        grid-template-columns: 1fr;
+    }
+
+    .brand-panel {
+        display: none;
+    }
+
+    .form-panel {
+        min-height: 100vh;
+        padding: 36px 22px;
+    }
+
+    .mobile-logo {
+        display: block;
+        margin-bottom: 42px;
+    }
+
+    .form-heading h2 {
+        font-size: 28px;
+    }
+}
