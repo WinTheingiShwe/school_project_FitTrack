@@ -36,8 +36,9 @@ login, logout, and a private profile with editable fitness goals.
 - Protect profile access with a shared session check and form submissions with CSRF tokens.
 - Rotate the session ID after authentication and clear the session on sign-out.
 
-Login currently opens the profile. The earlier weight page and placeholder feature pages
-are not part of the authenticated account flow yet; their integration is the next milestone.
+Login opens the profile, which now links to personal weight tracking. Weight history,
+saving, editing, and deletion are scoped to the signed-in user. Other feature pages
+are still awaiting integration.
 This development version is not ready for public deployment: login rate limiting,
 password recovery, and email verification are not implemented.
 
@@ -46,11 +47,23 @@ password recovery, and email verification are not implemented.
 Additional implementation exists in the local working tree and is awaiting review and
 feature-focused commits. These milestones are not yet marked as released:
 
-1. Weight tracking connected to the signed-in user
-2. Training records and duration summaries
-3. Nutrition records, followed by convenience-store product selection
-4. Personal dashboards with weight, training, and nutrition analysis
-5. Community analytics and a documented demonstration
+1. Training records and duration summaries
+2. Nutrition records, followed by convenience-store product selection
+3. Personal dashboards with weight, training, and nutrition analysis
+4. Community analytics and a documented demonstration
+
+## Personal weight tracking
+
+- Save one weight per user per day; saving that date again replaces its weight.
+- Edit or delete your own entries using CSRF-protected forms.
+- Keep other daily data when deleting a weight measurement.
+- Review history, a trend chart, and change from the first to latest measurement.
+- Show no change comparison until at least two dates are recorded.
+
+Inputs accept dates up to today and weights from 1–300 kg with up to two decimal places.
+The server date determines today. This is an input rule, not a health assessment.
+See the [Japanese development note](docs/WEIGHT_MILESTONE_JA.md) for the calculation
+and verification details.
 
 ## Technology stack
 
@@ -78,9 +91,8 @@ index.php      Redirects to sign-in
 4. From the project root, run `php -S localhost:8000`.
 5. Open `http://localhost:8000/` and select **Create Account**.
 
-The account flow works with the existing `users` table; no schema change is required
-for this milestone. The initial weight page still uses a development user ID in the
-committed version and will be connected to authentication in the next milestone.
+The account and weight flows use the existing `users` and `daily_records` tables;
+no schema migration is required for these milestones.
 
 ## Verification
 
@@ -88,7 +100,9 @@ Run `php tests/auth_http_test.php` against your local development database.
 The test requires permission to create a disposable PostgreSQL schema and starts a
 short-lived HTTP server on a loopback port. It checks registration, password hashing,
 login, session rotation, profile access, validation, CSRF rejection, account isolation,
-logout, and invalidated accounts. Test data and sessions are removed afterwards;
+logout, invalidated accounts, and personal weight CRUD. It also verifies malformed
+input, same-day replacement, cross-user isolation, and preservation of other daily data.
+Test data and sessions are removed afterwards;
 existing application tables are not modified.
 
 HTTP checks and PHP syntax checks have passed. Browser layout verification remains pending.

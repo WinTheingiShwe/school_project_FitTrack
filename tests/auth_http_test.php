@@ -43,6 +43,7 @@ try {
     $pdo->exec('CREATE SCHEMA ' . $schema);
     $pdo->exec('SET search_path TO ' . $schema);
     $pdo->exec('CREATE TABLE users (id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL, email VARCHAR(255) UNIQUE NOT NULL, password VARCHAR(255) NOT NULL, start_weight DECIMAL(5,2), goal_weight DECIMAL(5,2), start_date DATE, goal_date DATE, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
+    $pdo->exec('CREATE TABLE daily_records (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, record_date DATE NOT NULL, weight DECIMAL(5,2), training VARCHAR(100), calories INTEGER, protein DECIMAL(5,2), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UNIQUE(user_id, record_date))');
     $socket = stream_socket_server('tcp://127.0.0.1:0', $errorCode, $errorMessage);
     if (!$socket) throw new RuntimeException('Cannot allocate test port');
     $address = stream_socket_get_name($socket, false);
@@ -74,6 +75,7 @@ try {
         $accounts[$name] = $cookies;
     }
     $stored = $pdo->query("SELECT password FROM users WHERE email = 'one@example.test'")->fetchColumn();
+    require __DIR__ . '/weight_http_checks.php';
     checkAuth($stored !== 'Test-password-123' && password_verify('Test-password-123', $stored), 'Password must be hashed');
     $profile = requestAuth('/pages/profile.php', $accounts['one']);
     checkAuth(str_contains($profile['body'], 'one@example.test') && !str_contains($profile['body'], 'two@example.test'), 'Profile must show only the session account');
