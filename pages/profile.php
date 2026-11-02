@@ -126,7 +126,13 @@ if ($user['start_weight'] !== null && $user['goal_weight'] !== null) {
     <p class="sidebar-subtitle">Your Wellness Workspace</p>
 
     <nav class="sidebar-nav">
+        <a href="dashboard.php">▦ Dashboard</a>
         <a href="weight.php">⚖ Weight</a>
+        <a href="training.php">◆ Training</a>
+        <a href="nutrition.php">◈ Nutrition</a>
+        <?php if (is_file(__DIR__ . '/group_analytics.php')): ?>
+            <a href="group_analytics.php">▤ Group Analytics</a>
+        <?php endif; ?>
         <a href="profile.php" class="active" aria-current="page">◉ Profile</a>
     </nav>
 

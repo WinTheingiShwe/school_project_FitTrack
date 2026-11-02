@@ -216,6 +216,7 @@ function e($value) {
     <div class="sidebar-title">✦ FitTrack</div>
 
     <nav>
+        <a href="dashboard.php">▦ Dashboard</a>
 
         <a
             href="weight.php"
@@ -225,6 +226,11 @@ function e($value) {
             ⚖ Weight
         </a>
 
+        <a href="training.php">◆ Training</a>
+        <a href="nutrition.php">◈ Nutrition</a>
+        <?php if (is_file(__DIR__ . '/group_analytics.php')): ?>
+            <a href="group_analytics.php">▤ Group Analytics</a>
+        <?php endif; ?>
         <a href="profile.php">◉ Profile</a>
     </nav>
 </aside>
