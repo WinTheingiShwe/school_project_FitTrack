@@ -47,10 +47,21 @@ password recovery, and email verification are not implemented.
 Additional implementation exists in the local working tree and is awaiting review and
 feature-focused commits. These milestones are not yet marked as released:
 
-1. Training records and duration summaries
-2. Nutrition records, followed by convenience-store product selection
-3. Personal dashboards with weight, training, and nutrition analysis
-4. Community analytics and a documented demonstration
+1. Nutrition records, followed by convenience-store product selection
+2. Personal dashboards with weight, training, and nutrition analysis
+3. Community analytics and a documented demonstration
+
+## Training milestone
+
+Record personal workout sessions with optional duration. The last-six-month chart and
+source table distinguish session count from distinct training days. The monthly recorded
+minutes and all-time average exclude unknown duration and show no value when all durations
+are missing. Coverage counts explain how many sessions have recorded duration.
+
+Apply `database/migrations/001_training_records.sql` after the base schema, including on
+an existing account/weight installation. It preserves existing training records and can
+be run again. No migration was applied to real user data during development testing.
+See [the Japanese training note](docs/TRAINING_MILESTONE_JA.md) for definitions and checks.
 
 ## Personal weight tracking
 
@@ -100,7 +111,7 @@ Run `php tests/auth_http_test.php` against your local development database.
 The test requires permission to create a disposable PostgreSQL schema and starts a
 short-lived HTTP server on a loopback port. It checks registration, password hashing,
 login, session rotation, profile access, validation, CSRF rejection, account isolation,
-logout, invalidated accounts, and personal weight CRUD. It also verifies malformed
+logout, invalidated accounts, personal weight CRUD, and training records and summaries. It also verifies malformed
 input, same-day replacement, cross-user isolation, and preservation of other daily data.
 Test data and sessions are removed afterwards;
 existing application tables are not modified.
