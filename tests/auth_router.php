@@ -11,6 +11,8 @@ ob_end_clean();
 $pdo->exec('SET search_path TO ' . $schema);
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $routes = ['/', '/index.php', '/pages/account.php', '/pages/login.php', '/pages/signup.php', '/pages/profile.php', '/pages/logout.php', '/pages/weight.php', '/pages/training.php'];
+$routes[] = '/pages/nutrition.php';
+$routes[] = '/pages/add_nutrition.php';
 if (!in_array($path, $routes, true)) {
     http_response_code(404);
     exit;

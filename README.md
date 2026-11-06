@@ -47,9 +47,21 @@ password recovery, and email verification are not implemented.
 Additional implementation exists in the local working tree and is awaiting review and
 feature-focused commits. These milestones are not yet marked as released:
 
-1. Nutrition records, followed by convenience-store product selection
+1. Convenience-store product selection for nutrition records
 2. Personal dashboards with weight, training, and nutrition analysis
 3. Community analytics and a documented demonstration
+
+## Nutrition milestone
+
+Manually record food, date, calories, and optional protein. History and today's summary
+are private to the signed-in user. Calories are summed by date; protein totals are shown
+only when every entry has a value. Unknown protein is distinct from a recorded zero.
+Entry counts count foods, not meals. Values refer to the amount eaten.
+
+Apply `database/migrations/002_nutrition_records.sql` after the base schema.
+It preserves existing tables and data and creates the product table needed by the foreign
+key; product import and selection are a later milestone.
+See [the Japanese nutrition note](docs/NUTRITION_MILESTONE_JA.md) for examples and checks.
 
 ## Training milestone
 
@@ -96,7 +108,8 @@ index.php      Redirects to sign-in
 ## Local setup
 
 1. Install PHP 8+ with the PDO PostgreSQL and mbstring extensions and start PostgreSQL.
-2. Create a development database and apply `database/schema.sql`.
+2. Create a development database and apply `database/schema.sql`, then the SQL files in
+   `database/migrations/` in numbered order.
 3. Create `config/database.php` with a PDO connection assigned to `$pdo`.
    This file is excluded from Git because it contains local credentials.
 4. From the project root, run `php -S localhost:8000`.
@@ -111,7 +124,8 @@ Run `php tests/auth_http_test.php` against your local development database.
 The test requires permission to create a disposable PostgreSQL schema and starts a
 short-lived HTTP server on a loopback port. It checks registration, password hashing,
 login, session rotation, profile access, validation, CSRF rejection, account isolation,
-logout, invalidated accounts, personal weight CRUD, and training records and summaries. It also verifies malformed
+logout, invalidated accounts, personal weight CRUD, training records and summaries,
+and nutrition entry with daily totals. It also verifies malformed
 input, same-day replacement, cross-user isolation, and preservation of other daily data.
 Test data and sessions are removed afterwards;
 existing application tables are not modified.
